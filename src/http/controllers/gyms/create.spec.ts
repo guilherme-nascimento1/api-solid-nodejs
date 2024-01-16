@@ -1,7 +1,7 @@
-import { app } from '@/app'
-import { createAndAuthenticateUser } from '@/utils/test/create-and-authenticate-user'
 import request from 'supertest'
+import { app } from '@/app'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { createAndAuthenticateUser } from '@/utils/test/create-and-authenticate-user'
 
 describe('Create Gym (e2e)', () => {
   beforeAll(async () => {
@@ -19,11 +19,11 @@ describe('Create Gym (e2e)', () => {
       .post('/gyms')
       .set('Authorization', `Bearer ${token}`)
       .send({
-        title: 'Javascript Gym',
-        description: null,
-        phone: null,
-        latitude: -23.6387468,
-        longitude: -46.6878791,
+        title: 'JavaScript Gym',
+        description: 'Some description.',
+        phone: '1199999999',
+        latitude: -27.2092052,
+        longitude: -49.6401091,
       })
 
     expect(response.statusCode).toEqual(201)

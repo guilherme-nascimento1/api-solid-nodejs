@@ -1,15 +1,15 @@
 import { InMemoryCheckInsRepository } from '@/repositories/in-memory/in-memory-check-ins-repository'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { ResourceNotFoundError } from './errors/resources-not-found-error'
-import { ValidateCheckinUseCase } from './validate-check-in'
+import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error'
+import { expect, describe, it, beforeEach, afterEach, vi } from 'vitest'
+import { ValidateCheckInUseCase } from './validate-check-in'
 
 let checkInsRepository: InMemoryCheckInsRepository
-let sut: ValidateCheckinUseCase
+let sut: ValidateCheckInUseCase
 
-describe('Validate CheckIn Use Case', () => {
+describe('Validate Check-in Use Case', () => {
   beforeEach(async () => {
     checkInsRepository = new InMemoryCheckInsRepository()
-    sut = new ValidateCheckinUseCase(checkInsRepository)
+    sut = new ValidateCheckInUseCase(checkInsRepository)
 
     vi.useFakeTimers()
   })
@@ -18,32 +18,32 @@ describe('Validate CheckIn Use Case', () => {
     vi.useRealTimers()
   })
 
-  it('Should be able to validate check-in', async () => {
-    const createdcheckIn = await checkInsRepository.create({
+  it('should be able to validate the check-in', async () => {
+    const createdCheckIn = await checkInsRepository.create({
       gym_id: 'gym-01',
       user_id: 'user-01',
     })
 
     const { checkIn } = await sut.execute({
-      checkInId: createdcheckIn.id,
+      checkInId: createdCheckIn.id,
     })
 
     expect(checkIn.validated_at).toEqual(expect.any(Date))
     expect(checkInsRepository.items[0].validated_at).toEqual(expect.any(Date))
   })
 
-  it('Should not be able to validate and inexistent check-in', async () => {
-    expect(() =>
+  it('should not be able to validate an inexistent check-in', async () => {
+    await expect(() =>
       sut.execute({
-        checkInId: 'teste-01',
+        checkInId: 'inexistent-check-in-id',
       }),
     ).rejects.toBeInstanceOf(ResourceNotFoundError)
   })
 
-  it('Should not be able to validate the check-in after 20 minutes of its creation', async () => {
+  it('should not be able to validate the check-in after 20 minutes of its creation', async () => {
     vi.setSystemTime(new Date(2023, 0, 1, 13, 40))
 
-    const createdcheckIn = await checkInsRepository.create({
+    const createdCheckIn = await checkInsRepository.create({
       gym_id: 'gym-01',
       user_id: 'user-01',
     })
@@ -54,7 +54,7 @@ describe('Validate CheckIn Use Case', () => {
 
     await expect(() =>
       sut.execute({
-        checkInId: createdcheckIn.id,
+        checkInId: createdCheckIn.id,
       }),
     ).rejects.toBeInstanceOf(Error)
   })

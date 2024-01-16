@@ -12,6 +12,7 @@ interface FetchNearbyGymsUseCaseResponse {
 
 export class FetchNearbyGymsUseCase {
   constructor(private gymsRepository: GymsRepository) {}
+
   async execute({
     userLatitude,
     userLongitude,
